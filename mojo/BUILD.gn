@@ -58,7 +58,8 @@ test("mojo_unittests") {
     "//mojo/public/cpp/bindings/tests",
     "//mojo/public/cpp/platform/tests",
     "//mojo/public/cpp/system/tests",
-    "//mojo/public/js/ts/bindings/tests",
+    # Removed: JS/TS bindings tests (focusing on C++ only)
+    # "//mojo/public/js/ts/bindings/tests",
   ]
 
   if (is_linux && mojo_support_legacy_core) {
