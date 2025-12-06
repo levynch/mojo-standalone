@@ -20,7 +20,8 @@ group("mojo") {
     deps += [ "//mojo/public/java/system" ]
   }
 
-  deps += [ "//services/service_manager:all" ]
+  # Removed: service_manager is not a core mojo dependency
+  # deps += [ "//services/service_manager:all" ]
 }
 
 buildflag_header("buildflags") {
@@ -41,10 +42,11 @@ group("tests") {
   ]
 
   if (!is_ios) {
-    deps += [
-      "//ipc:ipc_tests",
-      "//services/service_manager/tests",
-    ]
+    # Removed: IPC and service_manager tests (dependencies removed)
+    # deps += [
+    #   "//ipc:ipc_tests",
+    #   "//services/service_manager/tests",
+    # ]
   }
 }
 
