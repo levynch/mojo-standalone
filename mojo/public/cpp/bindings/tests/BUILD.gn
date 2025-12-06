@@ -40,7 +40,7 @@ source_set("tests") {
     "message_queue.h",
     "message_unittest.cc",
     "multiplex_router_unittest.cc",
-    "native_struct_unittest.cc",
+    #"native_struct_unittest.cc",
     "new_endpoint_types_unittest.cc",
     "nullable_value_types_unittest.cc",
     "receiver_callback_unittest.cc",
@@ -146,40 +146,13 @@ source_set("test_types") {
 }
 
 
-# Removed: Blink-specific test target (extracting mojo as standalone module)
-# if (use_blink) {
-#   source_set("for_blink_tests") {
-#     testonly = true
-#
-#     sources = [
-#       "container_test_util.cc",
-#       "container_test_util.h",
-#       "variant_test_util.h",
-#       "wtf_hash_unittest.cc",
-#       "wtf_map_unittest.cc",
-#       "wtf_types_unittest.cc",
-#     ]
-#
-#     defines = [ "BLINK_MOJO_IMPL=1" ]
-#
-#     deps = [
-#       "//base/test:test_support",
-#       "//mojo/public/cpp/bindings",
-#       "//mojo/public/cpp/system",
-#       "//mojo/public/interfaces/bindings/tests:test_export_blink_component",
-#       "//mojo/public/interfaces/bindings/tests:test_exported_import_blink",
-#       "//mojo/public/interfaces/bindings/tests:test_interfaces",
-#       "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
-#       "//mojo/public/interfaces/bindings/tests:test_wtf_types",
-#       "//mojo/public/interfaces/bindings/tests:test_wtf_types_blink",
-#       "//testing/gtest",
-#     ]
-#
-#     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-#     # enable the diagnostic by removing this line.
-#     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-#   }
-# }
+# Dummy target to satisfy external dependencies (extracting mojo as standalone module)
+if (use_blink) {
+  group("for_blink_tests") {
+    # Empty: Blink tests removed
+    testonly = true
+  }
+}
 
 
 source_set("struct_with_traits_impl") {

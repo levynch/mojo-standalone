@@ -199,7 +199,6 @@ component("bindings") {
     "lib/multiplex_router.cc",
     "lib/multiplex_router.h",
     "lib/native_enum_data.h",
-    # Removed: Native type serialization (requires IPC dependencies)
     # "lib/native_enum_serialization.h",
     # "lib/native_handle_type_converters.cc",
     # "lib/native_handle_type_converters.h",
@@ -270,7 +269,6 @@ component("bindings") {
     ":bindings_base",
     ":struct_traits",
     "//base",
-    # Removed IPC dependencies - no longer supporting Native type serialization
     # "//ipc:message_support",
     # "//ipc:param_traits",
     "//mojo/public/cpp/system",
@@ -315,29 +313,9 @@ source_set("protobuf_support") {
 }
 
 
-# Removed: Blink WTF support (extracting mojo as standalone module)
-# if (use_blink) {
-#   component("wtf_support") {
-#     sources = [
-#       "lib/string_traits_wtf.cc",
-#       "lib/wtf_clone_equals_util.h",
-#       "lib/wtf_hash_util.h",
-#       "lib/wtf_serialization.h",
-#       "map_traits_wtf_hash_map.h",
-#       "string_traits_wtf.h",
-#     ]
-#
-#     configs += [ "//build/config/compiler:wexit_time_destructors" ]
-#
-#     defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
-#
-#     public_deps = [
-#       ":bindings",
-#       "//base",
-#       "//third_party/blink/public:blink_headers",
-#       "//third_party/blink/renderer/platform:platform_export",
-#       "//third_party/blink/renderer/platform/wtf",
-#     ]
-#   }
-# }
-```
+# Dummy target to satisfy external dependencies (extracting mojo as standalone module)
+if (use_blink) {
+  group("wtf_support") {
+    # Empty: actual Blink support code removed
+  }
+}

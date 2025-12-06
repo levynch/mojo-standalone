@@ -88,28 +88,6 @@ TEST_F(DataViewTest, NestedStruct) {
   EXPECT_EQ(42, struct_data_view.f_int32());
 }
 
-TEST_F(DataViewTest, NativeStruct) {
-  TestStructPtr obj(TestStruct::New());
-  obj->f_native_struct = native::NativeStruct::New();
-  obj->f_native_struct->data = std::vector<uint8_t>({3, 2, 1});
-
-  auto data_view_holder = SerializeTestStruct(std::move(obj));
-  auto& data_view = *data_view_holder->data_view;
-
-  native::NativeStructDataView struct_data_view;
-  data_view.GetFNativeStructDataView(&struct_data_view);
-
-  ArrayDataView<uint8_t> data_data_view;
-  struct_data_view.GetDataDataView(&data_data_view);
-
-  ASSERT_FALSE(data_data_view.is_null());
-  ASSERT_EQ(3u, data_data_view.size());
-  EXPECT_EQ(3, data_data_view[0]);
-  EXPECT_EQ(2, data_data_view[1]);
-  EXPECT_EQ(1, data_data_view[2]);
-  EXPECT_EQ(3, *data_data_view.data());
-}
-
 TEST_F(DataViewTest, BoolArray) {
   TestStructPtr obj(TestStruct::New());
   obj->f_bool_array = {true, false};
@@ -266,8 +244,9 @@ TEST_F(DataViewTest, Map) {
   ASSERT_TRUE(map_data_view.ReadValues(&values));
 
   std::unordered_map<std::string, int32_t> map;
-  for (size_t i = 0; i < 2; ++i)
+  for (size_t i = 0; i < 2; ++i) {
     map[keys[i]] = values[i];
+  }
 
   EXPECT_EQ(1, map["1"]);
   EXPECT_EQ(2, map["2"]);

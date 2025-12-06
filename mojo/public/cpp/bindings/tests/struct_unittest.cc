@@ -36,11 +36,6 @@ struct SerializeStructHelperTraits {
   using DataView = typename StructType::DataView;
 };
 
-template <>
-struct SerializeStructHelperTraits<native::NativeStruct> {
-  using DataView = native::NativeStructDataView;
-};
-
 template <typename InputType, typename DataType>
 size_t SerializeStruct(InputType& input,
                        mojo::Message* message,
@@ -192,8 +187,9 @@ TEST_F(StructTest, Serialization_StructPointers) {
 // Serialization test of a struct with an array member.
 TEST_F(StructTest, Serialization_ArrayPointers) {
   std::vector<RectPtr> rects;
-  for (size_t i = 0; i < 4; ++i)
+  for (size_t i = 0; i < 4; ++i) {
     rects.push_back(MakeRect(static_cast<int32_t>(i) + 1));
+  }
 
   NamedRegionPtr region(
       NamedRegion::New(std::string("region"), std::move(rects)));
@@ -217,8 +213,9 @@ TEST_F(StructTest, Serialization_ArrayPointers) {
   EXPECT_EQ("region", *region2->name);
 
   EXPECT_EQ(4U, region2->rects->size());
-  for (size_t i = 0; i < region2->rects->size(); ++i)
+  for (size_t i = 0; i < region2->rects->size(); ++i) {
     CheckRect(*(*region2->rects)[i], static_cast<int32_t>(i) + 1);
+  }
 }
 
 // Serialization test of a struct with null array pointers.
@@ -370,57 +367,6 @@ TEST_F(StructTest, Versioning_NewToOld) {
 }
 
 // Serialization test for native struct.
-TEST_F(StructTest, Serialization_NativeStruct) {
-  using Data = native::internal::NativeStruct_Data;
-  {
-    // Serialization of a null native struct.
-    native::NativeStructPtr native;
-
-    mojo::Message message;
-    Data* data = nullptr;
-    EXPECT_EQ(0u, SerializeStruct(native, &message, &data));
-    EXPECT_EQ(nullptr, data);
-
-    native::NativeStructPtr output_native;
-    mojo::internal::Deserialize<native::NativeStructDataView>(
-        data, &output_native, &message);
-    EXPECT_TRUE(output_native.is_null());
-  }
-
-  {
-    // Serialization of a native struct with null data.
-    native::NativeStructPtr native(native::NativeStruct::New());
-
-    mojo::Message message;
-    Data* data = nullptr;
-    EXPECT_EQ(32u, SerializeStruct(native, &message, &data));
-    EXPECT_EQ(0u, data->data.Get()->size());
-
-    native::NativeStructPtr output_native;
-    mojo::internal::Deserialize<native::NativeStructDataView>(
-        data, &output_native, &message);
-    EXPECT_TRUE(output_native->data.empty());
-  }
-
-  {
-    native::NativeStructPtr native(native::NativeStruct::New());
-    native->data = std::vector<uint8_t>{'X', 'Y'};
-
-    mojo::Message message;
-    Data* data = nullptr;
-    EXPECT_EQ(40u, SerializeStruct(native, &message, &data));
-    EXPECT_EQ(2u, data->data.Get()->size());
-
-    native::NativeStructPtr output_native;
-    mojo::internal::Deserialize<native::NativeStructDataView>(
-        data, &output_native, &message);
-    ASSERT_TRUE(output_native);
-    ASSERT_FALSE(output_native->data.empty());
-    EXPECT_EQ(2u, output_native->data.size());
-    EXPECT_EQ('X', output_native->data[0]);
-    EXPECT_EQ('Y', output_native->data[1]);
-  }
-}
 
 TEST_F(StructTest, Serialization_PublicAPI) {
   {
@@ -460,8 +406,9 @@ TEST_F(StructTest, Serialization_PublicAPI) {
   {
     // A struct containing other objects.
     std::vector<RectPtr> rects;
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < 3; ++i) {
       rects.push_back(MakeRect(static_cast<int32_t>(i) + 1));
+    }
     NamedRegionPtr region(
         NamedRegion::New(std::string("region"), std::move(rects)));
 

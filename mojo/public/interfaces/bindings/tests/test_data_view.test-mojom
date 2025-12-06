@@ -29,7 +29,7 @@ union TestUnion {
 struct TestStruct {
   string f_string;
   NestedStruct? f_struct;
-  TestNativeStruct? f_native_struct;
+  // TestNativeStruct? f_native_struct;
   array<bool> f_bool_array;
   array<int32> f_int32_array;
   array<TestEnum> f_enum_array;
