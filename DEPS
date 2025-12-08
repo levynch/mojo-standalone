@@ -13,6 +13,17 @@ skip_child_includes = [
 vars = {
   'build_with_chromium': False,
   'generate_location_tags': False,
+  'non_git_source': True,
+  
+  'checkout_android': False,
+  'checkout_linux': False,
+  'checkout_mac': False,
+  'checkout_ios': False,
+  'checkout_win': False,
+  'checkout_x86': False,
+  'checkout_x64': False,
+  
+  'rust_force_head_revision': False,
 
   'download_remoteexec_cfg': False,
   'rbe_instance': Str('projects/rbe-chrome-untrusted/instances/default_instance'),
