@@ -1,0 +1,367 @@
+From f071da262a5dda7393dd63581c7bbfb4c9c461f5 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 16:36:11 +0800
+Subject: [PATCH 09/10] [mojo] Remove NativeStruct and IPC dependencies
+
+Remove compilation of native struct serialization files and disable related tests. This is part of the work to extract Mojo as a standalone library and reduce dependencies on legacy IPC.
+---
+ mojo/public/cpp/bindings/BUILD.gn             | 34 ++--------
+ mojo/public/cpp/bindings/tests/BUILD.gn       | 43 +++---------
+ .../cpp/bindings/tests/data_view_unittest.cc  | 25 +------
+ .../cpp/bindings/tests/struct_unittest.cc     | 65 ++-----------------
+ .../bindings/tests/test_data_view.test-mojom  |  2 +-
+ .../tests/test_native_types.test-mojom        | 47 ++++++--------
+ 6 files changed, 43 insertions(+), 173 deletions(-)
+
+diff --git a/mojo/public/cpp/bindings/BUILD.gn b/mojo/public/cpp/bindings/BUILD.gn
+index 711c71b881..a448bc6a7f 100644
+--- a/mojo/public/cpp/bindings/BUILD.gn
++++ b/mojo/public/cpp/bindings/BUILD.gn
+@@ -199,7 +199,6 @@ component("bindings") {
+     "lib/multiplex_router.cc",
+     "lib/multiplex_router.h",
+     "lib/native_enum_data.h",
+-    # Removed: Native type serialization (requires IPC dependencies)
+     # "lib/native_enum_serialization.h",
+     # "lib/native_handle_type_converters.cc",
+     # "lib/native_handle_type_converters.h",
+@@ -270,7 +269,6 @@ component("bindings") {
+     ":bindings_base",
+     ":struct_traits",
+     "//base",
+-    # Removed IPC dependencies - no longer supporting Native type serialization
+     # "//ipc:message_support",
+     # "//ipc:param_traits",
+     "//mojo/public/cpp/system",
+@@ -315,29 +313,9 @@ source_set("protobuf_support") {
+ }
+ 
+ 
+-# Removed: Blink WTF support (extracting mojo as standalone module)
+-# if (use_blink) {
+-#   component("wtf_support") {
+-#     sources = [
+-#       "lib/string_traits_wtf.cc",
+-#       "lib/wtf_clone_equals_util.h",
+-#       "lib/wtf_hash_util.h",
+-#       "lib/wtf_serialization.h",
+-#       "map_traits_wtf_hash_map.h",
+-#       "string_traits_wtf.h",
+-#     ]
+-#
+-#     configs += [ "//build/config/compiler:wexit_time_destructors" ]
+-#
+-#     defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
+-#
+-#     public_deps = [
+-#       ":bindings",
+-#       "//base",
+-#       "//third_party/blink/public:blink_headers",
+-#       "//third_party/blink/renderer/platform:platform_export",
+-#       "//third_party/blink/renderer/platform/wtf",
+-#     ]
+-#   }
+-# }
+-```
++# Dummy target to satisfy external dependencies (extracting mojo as standalone module)
++if (use_blink) {
++  group("wtf_support") {
++    # Empty: actual Blink support code removed
++  }
++}
+diff --git a/mojo/public/cpp/bindings/tests/BUILD.gn b/mojo/public/cpp/bindings/tests/BUILD.gn
+index c7a39aac98..c262530987 100644
+--- a/mojo/public/cpp/bindings/tests/BUILD.gn
++++ b/mojo/public/cpp/bindings/tests/BUILD.gn
+@@ -40,7 +40,7 @@ source_set("tests") {
+     "message_queue.h",
+     "message_unittest.cc",
+     "multiplex_router_unittest.cc",
+-    "native_struct_unittest.cc",
++    #"native_struct_unittest.cc",
+     "new_endpoint_types_unittest.cc",
+     "nullable_value_types_unittest.cc",
+     "receiver_callback_unittest.cc",
+@@ -146,40 +146,13 @@ source_set("test_types") {
+ }
+ 
+ 
+-# Removed: Blink-specific test target (extracting mojo as standalone module)
+-# if (use_blink) {
+-#   source_set("for_blink_tests") {
+-#     testonly = true
+-#
+-#     sources = [
+-#       "container_test_util.cc",
+-#       "container_test_util.h",
+-#       "variant_test_util.h",
+-#       "wtf_hash_unittest.cc",
+-#       "wtf_map_unittest.cc",
+-#       "wtf_types_unittest.cc",
+-#     ]
+-#
+-#     defines = [ "BLINK_MOJO_IMPL=1" ]
+-#
+-#     deps = [
+-#       "//base/test:test_support",
+-#       "//mojo/public/cpp/bindings",
+-#       "//mojo/public/cpp/system",
+-#       "//mojo/public/interfaces/bindings/tests:test_export_blink_component",
+-#       "//mojo/public/interfaces/bindings/tests:test_exported_import_blink",
+-#       "//mojo/public/interfaces/bindings/tests:test_interfaces",
+-#       "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
+-#       "//mojo/public/interfaces/bindings/tests:test_wtf_types",
+-#       "//mojo/public/interfaces/bindings/tests:test_wtf_types_blink",
+-#       "//testing/gtest",
+-#     ]
+-#
+-#     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+-#     # enable the diagnostic by removing this line.
+-#     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+-#   }
+-# }
++# Dummy target to satisfy external dependencies (extracting mojo as standalone module)
++if (use_blink) {
++  group("for_blink_tests") {
++    # Empty: Blink tests removed
++    testonly = true
++  }
++}
+ 
+ 
+ source_set("struct_with_traits_impl") {
+diff --git a/mojo/public/cpp/bindings/tests/data_view_unittest.cc b/mojo/public/cpp/bindings/tests/data_view_unittest.cc
+index b965192aad..a5d21dab44 100644
+--- a/mojo/public/cpp/bindings/tests/data_view_unittest.cc
++++ b/mojo/public/cpp/bindings/tests/data_view_unittest.cc
+@@ -88,28 +88,6 @@ TEST_F(DataViewTest, NestedStruct) {
+   EXPECT_EQ(42, struct_data_view.f_int32());
+ }
+ 
+-TEST_F(DataViewTest, NativeStruct) {
+-  TestStructPtr obj(TestStruct::New());
+-  obj->f_native_struct = native::NativeStruct::New();
+-  obj->f_native_struct->data = std::vector<uint8_t>({3, 2, 1});
+-
+-  auto data_view_holder = SerializeTestStruct(std::move(obj));
+-  auto& data_view = *data_view_holder->data_view;
+-
+-  native::NativeStructDataView struct_data_view;
+-  data_view.GetFNativeStructDataView(&struct_data_view);
+-
+-  ArrayDataView<uint8_t> data_data_view;
+-  struct_data_view.GetDataDataView(&data_data_view);
+-
+-  ASSERT_FALSE(data_data_view.is_null());
+-  ASSERT_EQ(3u, data_data_view.size());
+-  EXPECT_EQ(3, data_data_view[0]);
+-  EXPECT_EQ(2, data_data_view[1]);
+-  EXPECT_EQ(1, data_data_view[2]);
+-  EXPECT_EQ(3, *data_data_view.data());
+-}
+-
+ TEST_F(DataViewTest, BoolArray) {
+   TestStructPtr obj(TestStruct::New());
+   obj->f_bool_array = {true, false};
+@@ -266,8 +244,9 @@ TEST_F(DataViewTest, Map) {
+   ASSERT_TRUE(map_data_view.ReadValues(&values));
+ 
+   std::unordered_map<std::string, int32_t> map;
+-  for (size_t i = 0; i < 2; ++i)
++  for (size_t i = 0; i < 2; ++i) {
+     map[keys[i]] = values[i];
++  }
+ 
+   EXPECT_EQ(1, map["1"]);
+   EXPECT_EQ(2, map["2"]);
+diff --git a/mojo/public/cpp/bindings/tests/struct_unittest.cc b/mojo/public/cpp/bindings/tests/struct_unittest.cc
+index 1cd20a4bbf..7ddb5609ce 100644
+--- a/mojo/public/cpp/bindings/tests/struct_unittest.cc
++++ b/mojo/public/cpp/bindings/tests/struct_unittest.cc
+@@ -36,11 +36,6 @@ struct SerializeStructHelperTraits {
+   using DataView = typename StructType::DataView;
+ };
+ 
+-template <>
+-struct SerializeStructHelperTraits<native::NativeStruct> {
+-  using DataView = native::NativeStructDataView;
+-};
+-
+ template <typename InputType, typename DataType>
+ size_t SerializeStruct(InputType& input,
+                        mojo::Message* message,
+@@ -192,8 +187,9 @@ TEST_F(StructTest, Serialization_StructPointers) {
+ // Serialization test of a struct with an array member.
+ TEST_F(StructTest, Serialization_ArrayPointers) {
+   std::vector<RectPtr> rects;
+-  for (size_t i = 0; i < 4; ++i)
++  for (size_t i = 0; i < 4; ++i) {
+     rects.push_back(MakeRect(static_cast<int32_t>(i) + 1));
++  }
+ 
+   NamedRegionPtr region(
+       NamedRegion::New(std::string("region"), std::move(rects)));
+@@ -217,8 +213,9 @@ TEST_F(StructTest, Serialization_ArrayPointers) {
+   EXPECT_EQ("region", *region2->name);
+ 
+   EXPECT_EQ(4U, region2->rects->size());
+-  for (size_t i = 0; i < region2->rects->size(); ++i)
++  for (size_t i = 0; i < region2->rects->size(); ++i) {
+     CheckRect(*(*region2->rects)[i], static_cast<int32_t>(i) + 1);
++  }
+ }
+ 
+ // Serialization test of a struct with null array pointers.
+@@ -370,57 +367,6 @@ TEST_F(StructTest, Versioning_NewToOld) {
+ }
+ 
+ // Serialization test for native struct.
+-TEST_F(StructTest, Serialization_NativeStruct) {
+-  using Data = native::internal::NativeStruct_Data;
+-  {
+-    // Serialization of a null native struct.
+-    native::NativeStructPtr native;
+-
+-    mojo::Message message;
+-    Data* data = nullptr;
+-    EXPECT_EQ(0u, SerializeStruct(native, &message, &data));
+-    EXPECT_EQ(nullptr, data);
+-
+-    native::NativeStructPtr output_native;
+-    mojo::internal::Deserialize<native::NativeStructDataView>(
+-        data, &output_native, &message);
+-    EXPECT_TRUE(output_native.is_null());
+-  }
+-
+-  {
+-    // Serialization of a native struct with null data.
+-    native::NativeStructPtr native(native::NativeStruct::New());
+-
+-    mojo::Message message;
+-    Data* data = nullptr;
+-    EXPECT_EQ(32u, SerializeStruct(native, &message, &data));
+-    EXPECT_EQ(0u, data->data.Get()->size());
+-
+-    native::NativeStructPtr output_native;
+-    mojo::internal::Deserialize<native::NativeStructDataView>(
+-        data, &output_native, &message);
+-    EXPECT_TRUE(output_native->data.empty());
+-  }
+-
+-  {
+-    native::NativeStructPtr native(native::NativeStruct::New());
+-    native->data = std::vector<uint8_t>{'X', 'Y'};
+-
+-    mojo::Message message;
+-    Data* data = nullptr;
+-    EXPECT_EQ(40u, SerializeStruct(native, &message, &data));
+-    EXPECT_EQ(2u, data->data.Get()->size());
+-
+-    native::NativeStructPtr output_native;
+-    mojo::internal::Deserialize<native::NativeStructDataView>(
+-        data, &output_native, &message);
+-    ASSERT_TRUE(output_native);
+-    ASSERT_FALSE(output_native->data.empty());
+-    EXPECT_EQ(2u, output_native->data.size());
+-    EXPECT_EQ('X', output_native->data[0]);
+-    EXPECT_EQ('Y', output_native->data[1]);
+-  }
+-}
+ 
+ TEST_F(StructTest, Serialization_PublicAPI) {
+   {
+@@ -460,8 +406,9 @@ TEST_F(StructTest, Serialization_PublicAPI) {
+   {
+     // A struct containing other objects.
+     std::vector<RectPtr> rects;
+-    for (size_t i = 0; i < 3; ++i)
++    for (size_t i = 0; i < 3; ++i) {
+       rects.push_back(MakeRect(static_cast<int32_t>(i) + 1));
++    }
+     NamedRegionPtr region(
+         NamedRegion::New(std::string("region"), std::move(rects)));
+ 
+diff --git a/mojo/public/interfaces/bindings/tests/test_data_view.test-mojom b/mojo/public/interfaces/bindings/tests/test_data_view.test-mojom
+index 3875688e67..e2d8dd8edd 100644
+--- a/mojo/public/interfaces/bindings/tests/test_data_view.test-mojom
++++ b/mojo/public/interfaces/bindings/tests/test_data_view.test-mojom
+@@ -29,7 +29,7 @@ union TestUnion {
+ struct TestStruct {
+   string f_string;
+   NestedStruct? f_struct;
+-  TestNativeStruct? f_native_struct;
++  // TestNativeStruct? f_native_struct;
+   array<bool> f_bool_array;
+   array<int32> f_int32_array;
+   array<TestEnum> f_enum_array;
+diff --git a/mojo/public/interfaces/bindings/tests/test_native_types.test-mojom b/mojo/public/interfaces/bindings/tests/test_native_types.test-mojom
+index 9bd3282ec3..069806789c 100644
+--- a/mojo/public/interfaces/bindings/tests/test_native_types.test-mojom
++++ b/mojo/public/interfaces/bindings/tests/test_native_types.test-mojom
+@@ -8,43 +8,36 @@ import "mojo/public/interfaces/bindings/tests/rect.test-mojom";
+ 
+ // Used to verify that structs can be declared with no body in mojom.
+ 
+-[Native]
+-struct PickledStruct;
++// [Native]
++// struct PickledStruct;
+ 
+-[Native]
+-enum PickledEnum;
++// [Native]
++// enum PickledEnum;
+ 
+ struct PickleContainer {
+-  PickledStruct f_struct;
+-  PickledEnum f_enum;
++  // PickledStruct f_struct;
++  // PickledEnum f_enum;
+ };
+ 
+ interface PicklePasser {
+-  PassPickledStruct(PickledStruct pickle) => (PickledStruct passed);
+-  PassPickledEnum(PickledEnum pickle) => (PickledEnum passed);
+-  PassPickleContainer(PickleContainer container) => (PickleContainer passed);
+-  PassPickles(array<PickledStruct> pickles) => (array<PickledStruct> passed);
+-  PassPickleArrays(array<array<PickledStruct>> pickle_arrays)
+-      => (array<array<PickledStruct>> passed);
++//   PassPickledStruct(PickledStruct pickle) => (PickledStruct passed);
++//   PassPickledEnum(PickledEnum pickle) => (PickledEnum passed);
++//   PassPickleContainer(PickleContainer container) => (PickleContainer passed);
++//   PassPickles(array<PickledStruct> pickles) => (array<PickledStruct> passed);
++//   PassPickleArrays(array<array<PickledStruct>> pickle_arrays)
++//       => (array<array<PickledStruct>> passed);
+ };
+ 
+-// Used to verify support for native serialization of mojom-defined structs
+-// using StrucTraits with different variants of the Rect type from rect.mojom.
++// ...
+ 
+-interface RectService {
+-  AddRect(TypemappedRect r);
+-  GetLargestRect() => (TypemappedRect largest);
+-  PassSharedRect(SharedTypemappedRect r) => (SharedTypemappedRect passed);
+-};
+-
+-[Native]
+-struct TestNativeStructMojom;
++// [Native]
++// struct TestNativeStructMojom;
+ 
+-[Native]
+-struct TestNativeStructWithAttachmentsMojom;
++// [Native]
++// struct TestNativeStructWithAttachmentsMojom;
+ 
+ interface NativeTypeTester {
+-  PassNativeStruct(TestNativeStructMojom s) => (TestNativeStructMojom passed);
+-  PassNativeStructWithAttachments(TestNativeStructWithAttachmentsMojom s)
+-      => (TestNativeStructWithAttachmentsMojom s);
++//   PassNativeStruct(TestNativeStructMojom s) => (TestNativeStructMojom passed);
++//   PassNativeStructWithAttachments(TestNativeStructWithAttachmentsMojom s)
++//       => (TestNativeStructWithAttachmentsMojom s);
+ };
+-- 
+2.52.0.windows.1
+

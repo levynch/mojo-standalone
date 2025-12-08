@@ -1,0 +1,36 @@
+From 2c9bcbbb232ffa993110902d4c3c7d260aad8602 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 15:12:42 +0800
+Subject: [PATCH 06/10] [mojo] Remove JS/TS bindings test dependency
+
+Remove //mojo/public/js/ts/bindings/tests from mojo_unittests.
+This test dependency is not needed when focusing on C++ functionality only.
+
+Keeping all other test dependencies as they are essential for verifying
+core mojo functionality.
+
+Part of mojo/minimal-deps effort.
+
+Bug: None
+---
+ mojo/BUILD.gn                      |  3 +-
+  1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mojo/BUILD.gn b/mojo/BUILD.gn
+index f9d2012112..ea76c7b6a9 100644
+--- a/mojo/BUILD.gn
++++ b/mojo/BUILD.gn
+@@ -58,7 +58,8 @@ test("mojo_unittests") {
+     "//mojo/public/cpp/bindings/tests",
+     "//mojo/public/cpp/platform/tests",
+     "//mojo/public/cpp/system/tests",
+-    "//mojo/public/js/ts/bindings/tests",
++    # Removed: JS/TS bindings tests (focusing on C++ only)
++    # "//mojo/public/js/ts/bindings/tests",
+   ]
+ 
+   if (is_linux && mojo_support_legacy_core) {
+
+-- 
+2.52.0.windows.1
+

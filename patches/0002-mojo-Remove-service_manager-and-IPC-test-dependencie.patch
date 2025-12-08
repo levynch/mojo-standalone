@@ -1,0 +1,51 @@
+From 6abac7b58a0dbbda85a1e6f0eacbb00f7a5503fb Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 14:56:16 +0800
+Subject: [PATCH 05/10] [mojo] Remove service_manager and IPC test dependencies
+
+Remove non-core test dependencies from mojo module:
+- Remove //services/service_manager:all
+- Remove //ipc:ipc_tests
+- Remove //services/service_manager/tests
+
+Part of mojo/minimal-deps effort.
+
+Bug: None
+---
+ mojo/BUILD.gn            | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/mojo/BUILD.gn b/mojo/BUILD.gn
+index f306502c00..f9d2012112 100644
+--- a/mojo/BUILD.gn
++++ b/mojo/BUILD.gn
+@@ -20,7 +20,8 @@ group("mojo") {
+     deps += [ "//mojo/public/java/system" ]
+   }
+ 
+-  deps += [ "//services/service_manager:all" ]
++  # Removed: service_manager is not a core mojo dependency
++  # deps += [ "//services/service_manager:all" ]
+ }
+ 
+ buildflag_header("buildflags") {
+@@ -41,10 +42,11 @@ group("tests") {
+   ]
+ 
+   if (!is_ios) {
+-    deps += [
+-      "//ipc:ipc_tests",
+-      "//services/service_manager/tests",
+-    ]
++    # Removed: IPC and service_manager tests (dependencies removed)
++    # deps += [
++    #   "//ipc:ipc_tests",
++    #   "//services/service_manager/tests",
++    # ]
+   }
+ }
+
+
+-- 
+2.52.0.windows.1
+

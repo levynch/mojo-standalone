@@ -1,0 +1,74 @@
+From 62f8e9d71bcb7cc26e7c51376a046e9f45c012dd Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 14:10:42 +0800
+Subject: [PATCH 04/10] [mojo] Remove external dependencies (crypto, IPC)
+
+Remove unused and compatibility dependencies from mojo:
+- Remove //crypto dependency
+- Remove //ipc:message_support and //ipc:param_traits
+- Comment out Native type serialization support files
+
+This is part of the mojo/minimal-deps effort to reduce external dependencies
+and keep only //base, //third_party/ipcz, and //third_party/abseil-cpp.
+
+Removed functionality:
+- Native type serialization ([Native] mojom types)
+- IPC::ParamTraits support
+- Interop with legacy IPC system
+
+Bug: None
+---
+ mojo/core/BUILD.gn                |  2 +-
+ mojo/public/cpp/bindings/BUILD.gn | 16 +++---
+ 2 files changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/mojo/core/BUILD.gn b/mojo/core/BUILD.gn
+index cea0717b6c..f1c49d55d4 100644
+--- a/mojo/core/BUILD.gn
++++ b/mojo/core/BUILD.gn
+@@ -183,7 +183,7 @@ source_set("impl_for_embedder") {
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+ 
+   defines = [ "MOJO_SYSTEM_IMPL_IMPLEMENTATION" ]
+-  deps = [ "//crypto" ]
++  # deps = [ "//crypto" ]  # Removed: no direct usage found in mojo/core
+ 
+   if (is_win) {
+     sources += [
+diff --git a/mojo/public/cpp/bindings/BUILD.gn b/mojo/public/cpp/bindings/BUILD.gn
+index 2746a2e39b..8574bbed82 100644
+--- a/mojo/public/cpp/bindings/BUILD.gn
++++ b/mojo/public/cpp/bindings/BUILD.gn
+@@ -199,11 +199,12 @@ component("bindings") {
+     "lib/multiplex_router.cc",
+     "lib/multiplex_router.h",
+     "lib/native_enum_data.h",
+-    "lib/native_enum_serialization.h",
+-    "lib/native_handle_type_converters.cc",
+-    "lib/native_handle_type_converters.h",
+-    "lib/native_struct_serialization.cc",
+-    "lib/native_struct_serialization.h",
++    # Removed: Native type serialization (requires IPC dependencies)
++    # "lib/native_enum_serialization.h",
++    # "lib/native_handle_type_converters.cc",
++    # "lib/native_handle_type_converters.h",
++    # "lib/native_struct_serialization.cc",
++    # "lib/native_struct_serialization.h",
+     "lib/pipe_control_message_handler.cc",
+     "lib/pipe_control_message_proxy.cc",
+     "lib/sequence_local_sync_event_watcher.cc",
+@@ -269,8 +270,9 @@ component("bindings") {
+     ":bindings_base",
+     ":struct_traits",
+     "//base",
+-    "//ipc:message_support",
+-    "//ipc:param_traits",
++    # Removed IPC dependencies - no longer supporting Native type serialization
++    # "//ipc:message_support",
++    # "//ipc:param_traits",
+     "//mojo/public/cpp/system",
+     "//mojo/public/interfaces/bindings",
+   ]
+-- 
+2.52.0.windows.1
+

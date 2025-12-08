@@ -1,0 +1,196 @@
+From f2bb285520feff066711dfc7a59615379150518d Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 15:34:34 +0800
+Subject: [PATCH 07/10] [mojo] Remove Blink dependencies
+
+Remove Blink-specific targets and tests to support using mojo as a standalone module:
+- Remove wtf_support component from mojo/public/cpp/bindings
+- Remove Blink-specific tests from mojo/public/cpp/bindings/tests
+- Remove dependencies on //third_party/blink
+- Explicitly assert no Blink dependencies
+
+Part of mojo/minimal-deps effort.
+
+Bug: None
+---
+ mojo/public/cpp/bindings/BUILD.gn       | 49 +++++++------
+ mojo/public/cpp/bindings/tests/BUILD.gn | 95 +++++++++++++------------
+ 2 files changed, 77 insertions(+), 67 deletions(-)
+
+diff --git a/mojo/public/cpp/bindings/BUILD.gn b/mojo/public/cpp/bindings/BUILD.gn
+index 8574bbed82..711c71b881 100644
+--- a/mojo/public/cpp/bindings/BUILD.gn
++++ b/mojo/public/cpp/bindings/BUILD.gn
+@@ -314,27 +314,30 @@ source_set("protobuf_support") {
+   ]
+ }
+ 
+-if (use_blink) {
+-  component("wtf_support") {
+-    sources = [
+-      "lib/string_traits_wtf.cc",
+-      "lib/wtf_clone_equals_util.h",
+-      "lib/wtf_hash_util.h",
+-      "lib/wtf_serialization.h",
+-      "map_traits_wtf_hash_map.h",
+-      "string_traits_wtf.h",
+-    ]
+-
+-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+-
+-    defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
+ 
+-    public_deps = [
+-      ":bindings",
+-      "//base",
+-      "//third_party/blink/public:blink_headers",
+-      "//third_party/blink/renderer/platform:platform_export",
+-      "//third_party/blink/renderer/platform/wtf",
+-    ]
+-  }
+-}
++# Removed: Blink WTF support (extracting mojo as standalone module)
++# if (use_blink) {
++#   component("wtf_support") {
++#     sources = [
++#       "lib/string_traits_wtf.cc",
++#       "lib/wtf_clone_equals_util.h",
++#       "lib/wtf_hash_util.h",
++#       "lib/wtf_serialization.h",
++#       "map_traits_wtf_hash_map.h",
++#       "string_traits_wtf.h",
++#     ]
++#
++#     configs += [ "//build/config/compiler:wexit_time_destructors" ]
++#
++#     defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
++#
++#     public_deps = [
++#       ":bindings",
++#       "//base",
++#       "//third_party/blink/public:blink_headers",
++#       "//third_party/blink/renderer/platform:platform_export",
++#       "//third_party/blink/renderer/platform/wtf",
++#     ]
++#   }
++# }
++```
+diff --git a/mojo/public/cpp/bindings/tests/BUILD.gn b/mojo/public/cpp/bindings/tests/BUILD.gn
+index 679d5c8f37..c7a39aac98 100644
+--- a/mojo/public/cpp/bindings/tests/BUILD.gn
++++ b/mojo/public/cpp/bindings/tests/BUILD.gn
+@@ -102,20 +102,24 @@ source_set("tests") {
+     data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
+   }
+ 
+-  if (!use_blink) {
+-    assert_no_deps = [ "//third_party/blink/*" ]
+-  } else {
+-    sources += [
+-      "pickle_unittest.cc",
+-      "struct_traits_unittest.cc",
+-    ]
++  # Removed: Blink-specific tests (extracting mojo as standalone module)
++  # if (!use_blink) {
++  #   assert_no_deps = [ "//third_party/blink/*" ]
++  # } else {
++  #   sources += [
++  #     "pickle_unittest.cc",
++  #     "struct_traits_unittest.cc",
++  #   ]
++  #
++  #   deps += [
++  #     ":struct_with_traits_impl",
++  #     "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
++  #   ]
++  #   defines = [ "BLINK_MOJO_IMPL=1" ]
++  # }
+ 
+-    deps += [
+-      ":struct_with_traits_impl",
+-      "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
+-    ]
+-    defines = [ "BLINK_MOJO_IMPL=1" ]
+-  }
++  # Explicitly assert no Blink dependencies for standalone mojo
++  assert_no_deps = [ "//third_party/blink/*" ]
+ 
+   if (enable_nocompile_tests) {
+     deps += [ ":bindings_nocompile_tests" ]
+@@ -141,39 +145,42 @@ source_set("test_types") {
+   testonly = true
+ }
+ 
+-if (use_blink) {
+-  source_set("for_blink_tests") {
+-    testonly = true
+-
+-    sources = [
+-      "container_test_util.cc",
+-      "container_test_util.h",
+-      "variant_test_util.h",
+-      "wtf_hash_unittest.cc",
+-      "wtf_map_unittest.cc",
+-      "wtf_types_unittest.cc",
+-    ]
+ 
+-    defines = [ "BLINK_MOJO_IMPL=1" ]
++# Removed: Blink-specific test target (extracting mojo as standalone module)
++# if (use_blink) {
++#   source_set("for_blink_tests") {
++#     testonly = true
++#
++#     sources = [
++#       "container_test_util.cc",
++#       "container_test_util.h",
++#       "variant_test_util.h",
++#       "wtf_hash_unittest.cc",
++#       "wtf_map_unittest.cc",
++#       "wtf_types_unittest.cc",
++#     ]
++#
++#     defines = [ "BLINK_MOJO_IMPL=1" ]
++#
++#     deps = [
++#       "//base/test:test_support",
++#       "//mojo/public/cpp/bindings",
++#       "//mojo/public/cpp/system",
++#       "//mojo/public/interfaces/bindings/tests:test_export_blink_component",
++#       "//mojo/public/interfaces/bindings/tests:test_exported_import_blink",
++#       "//mojo/public/interfaces/bindings/tests:test_interfaces",
++#       "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
++#       "//mojo/public/interfaces/bindings/tests:test_wtf_types",
++#       "//mojo/public/interfaces/bindings/tests:test_wtf_types_blink",
++#       "//testing/gtest",
++#     ]
++#
++#     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
++#     # enable the diagnostic by removing this line.
++#     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
++#   }
++# }
+ 
+-    deps = [
+-      "//base/test:test_support",
+-      "//mojo/public/cpp/bindings",
+-      "//mojo/public/cpp/system",
+-      "//mojo/public/interfaces/bindings/tests:test_export_blink_component",
+-      "//mojo/public/interfaces/bindings/tests:test_exported_import_blink",
+-      "//mojo/public/interfaces/bindings/tests:test_interfaces",
+-      "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
+-      "//mojo/public/interfaces/bindings/tests:test_wtf_types",
+-      "//mojo/public/interfaces/bindings/tests:test_wtf_types_blink",
+-      "//testing/gtest",
+-    ]
+-
+-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+-    # enable the diagnostic by removing this line.
+-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+-  }
+-}
+ 
+ source_set("struct_with_traits_impl") {
+   sources = [
+-- 
+2.52.0.windows.1
+

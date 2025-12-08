@@ -1,0 +1,142 @@
+From e2f1c2b5307765c91a203674e239a2254b0ac240 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 6 Dec 2025 15:54:37 +0800
+Subject: [PATCH 08/10] [mojo] Remove IPC dependencies from test interfaces
+
+Remove native typemaps that rely on IPC traits from test_interfaces.
+This cuts off a large tree of transitive dependencies including:
+- //ipc
+- //crypto
+- //services/tracing
+- //third_party/perfetto
+
+Part of mojo/minimal-deps effort.
+
+Bug: None
+---
+ .../public/interfaces/bindings/tests/BUILD.gn | 102 +++++++++---------
+ 1 file changed, 53 insertions(+), 49 deletions(-)
+
+diff --git a/mojo/public/interfaces/bindings/tests/BUILD.gn b/mojo/public/interfaces/bindings/tests/BUILD.gn
+index 6c688703c8..e42301de5c 100644
+--- a/mojo/public/interfaces/bindings/tests/BUILD.gn
++++ b/mojo/public/interfaces/bindings/tests/BUILD.gn
+@@ -122,37 +122,39 @@ mojom("test_interfaces") {
+         "//mojo/public/cpp/bindings/tests/shared_rect_traits.h",
+       ]
+     },
+-    {
+-      types = [
+-        {
+-          mojom = "mojo.test.PickledEnum"
+-          cpp = "::mojo::test::PickledEnumChromium"
+-        },
+-        {
+-          mojom = "mojo.test.PickledStruct"
+-          cpp = "::mojo::test::PickledStructChromium"
+-          move_only = true
+-        },
+-        {
+-          mojom = "mojo.test.TestNativeStructMojom"
+-          cpp = "::mojo::test::TestNativeStruct"
+-        },
+-        {
+-          mojom = "mojo.test.TestNativeStructWithAttachmentsMojom"
+-          cpp = "::mojo::test::TestNativeStructWithAttachments"
+-          move_only = true
+-        },
+-      ]
+-      traits_sources = [
+-        "//mojo/public/cpp/bindings/tests/pickled_types_chromium.cc",
+-        "//mojo/public/cpp/bindings/tests/test_native_types.cc",
+-      ]
+-      traits_headers = [
+-        "//mojo/public/cpp/bindings/tests/pickled_types_chromium.h",
+-        "//mojo/public/cpp/bindings/tests/test_native_types.h",
+-      ]
+-      traits_deps = [ "//ipc" ]
+-    },
++    # Removed: Native types requiring IPC dependencies (extracting mojo as standalone module)
++    # {
++    #   types = [
++    #     {
++    #       mojom = "mojo.test.PickledEnum"
++    #       cpp = "::mojo::test::PickledEnumChromium"
++    #     },
++    #     {
++    #       mojom = "mojo.test.PickledStruct"
++    #       cpp = "::mojo::test::PickledStructChromium"
++    #       move_only = true
++    #     },
++    #     {
++    #       mojom = "mojo.test.TestNativeStructMojom"
++    #       cpp = "::mojo::test::TestNativeStruct"
++    #     },
++    #     {
++    #       mojom = "mojo.test.TestNativeStructWithAttachmentsMojom"
++    #       cpp = "::mojo::test::TestNativeStructWithAttachments"
++    #       move_only = true
++    #     },
++    #   ]
++    #   traits_sources = [
++    #     "//mojo/public/cpp/bindings/tests/pickled_types_chromium.cc",
++    #     "//mojo/public/cpp/bindings/tests/test_native_types.cc",
++    #   ]
++    #   traits_headers = [
++    #     "//mojo/public/cpp/bindings/tests/pickled_types_chromium.h",
++    #     "//mojo/public/cpp/bindings/tests/test_native_types.h",
++    #   ]
++    #   traits_deps = [ "//ipc" ]
++    # },
++
+   ]
+ 
+   blink_cpp_typemaps = [
+@@ -173,24 +175,26 @@ mojom("test_interfaces") {
+         "//mojo/public/cpp/bindings/tests/shared_rect_traits.h",
+       ]
+     },
+-    {
+-      types = [
+-        {
+-          mojom = "mojo.test.PickledEnum"
+-          cpp = "::mojo::test::PickledEnumBlink"
+-        },
+-        {
+-          mojom = "mojo.test.PickledStruct"
+-          cpp = "::mojo::test::PickledStructBlink"
+-          move_only = true
+-        },
+-      ]
+-      traits_sources =
+-          [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.cc" ]
+-      traits_headers =
+-          [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.h" ]
+-      traits_deps = [ "//ipc" ]
+-    },
++    # Removed: Blink Native types requiring IPC dependencies
++    # {
++    #   types = [
++    #     {
++    #       mojom = "mojo.test.PickledEnum"
++    #       cpp = "::mojo::test::PickledEnumBlink"
++    #     },
++    #     {
++    #       mojom = "mojo.test.PickledStruct"
++    #       cpp = "::mojo::test::PickledStructBlink"
++    #       move_only = true
++    #     },
++    #   ]
++    #   traits_sources =
++    #       [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.cc" ]
++    #   traits_headers =
++    #       [ "//mojo/public/cpp/bindings/tests/pickled_types_blink.h" ]
++    #   traits_deps = [ "//ipc" ]
++    # },
++
+   ]
+ 
+   # Validation tests require precise message content matching, so we avoid
+-- 
+2.52.0.windows.1
+
