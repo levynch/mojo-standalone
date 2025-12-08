@@ -327,7 +327,7 @@ deps = {
   },
 
   # Update prebuilt Rust toolchain.
-  'hird_party/rust-toolchain': {
+  'third_party/rust-toolchain': {
     'dep_type': 'gcs',
     'bucket': 'chromium-browser-clang',
     'condition': 'not rust_force_head_revision',
