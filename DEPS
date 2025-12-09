@@ -4,6 +4,7 @@ gclient_gn_args_file = 'build/config/gclient_args.gni'
 gclient_gn_args = [
   'build_with_chromium',
   'generate_location_tags',
+  'checkout_src_internal',
 ]
 
 skip_child_includes = [
@@ -11,8 +12,9 @@ skip_child_includes = [
 ]
 
 vars = {
-  'build_with_chromium': False,
+  'build_with_chromium': True,
   'generate_location_tags': False,
+  'checkout_src_internal': False,
   'non_git_source': True,
   
   'checkout_android': False,
@@ -34,7 +36,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
 
   'abseil_revision': 'c54e50d9f14471146af9f1f357b3c525c2ff5bb7',
-  'build_revision': '0347b49096ca873f595c8e285c9bb3e256131f42',
+  #'build_revision': '0347b49096ca873f595c8e285c9bb3e256131f42',
   'buildtools_revision': '5df641722f2e50623646d702e0046fb68c0f5ce1',
   'boringssl_git': 'https://boringssl.googlesource.com',
   'boringssl_revision': '815857bdc3ba18bc666851ac3adf69a668624a1c',
@@ -64,7 +66,7 @@ deps = {
      '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
      Var('clang_format_revision'),
 
-  'build': '{chromium_git}/chromium/src/build.git@{build_revision}',
+  #'build': None,
   'buildtools': '{chromium_git}/chromium/src/buildtools.git@{buildtools_revision}',
 
   'buildtools/linux64': {
