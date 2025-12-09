@@ -47,7 +47,7 @@ vars = {
   'catapult_revision': '6fd8bbe723677254ff1130a1a416988b8b3e285e',
   'chromium_googletest_revision': '91e8a4cf5607164178e0455bbea40845c9b0d93c',
   'chromium_re2_revision': '581c1f779dffb7d5ffd4296b79736c9ce961caae',
-  'chromium_testing_revision': '6bf7e8e674b4552e12d140378e4394e7970e3fbc',
+#  'chromium_testing_revision': '6bf7e8e674b4552e12d140378e4394e7970e3fbc',
   'clang_format_revision': 'c2725e0622e1a86d55f14514f2177a39efea4a0e',
   'clang_revision': 'f0aeeca2d4eea4ade7308a31bc4023fc52614332',
   'compiler_rt_revision': 'd4d5a24a5514088089ccbaebda6576da640f04e8',
@@ -114,7 +114,7 @@ deps = {
      'dep_type': 'cipd',
    },
 
-  'testing': '{chromium_git}/chromium/src/testing.git@{chromium_testing_revision}',
+  #'testing': '{chromium_git}/chromium/src/testing.git@{chromium_testing_revision}',
   'third_party/abseil-cpp': '{chromium_git}/chromium/src/third_party/abseil-cpp@{abseil_revision}',
   'third_party/boringssl/src':
     Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),
