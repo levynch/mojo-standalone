@@ -8,9 +8,17 @@ import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/node/node.gni")
 import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/generate_code_cache.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/webui_features.gni")
+#import("//ui/webui/resources/tools/generate_code_cache.gni")
+#import("//ui/webui/resources/tools/generate_grd.gni")
+#import("//ui/webui/webui_features.gni")
+
+# Define WebUI-related variables with default values for standalone build
+if (!defined(optimize_webui)) {
+  optimize_webui = false
+}
+if (!defined(enable_webui_generate_code_cache)) {
+  enable_webui_generate_code_cache = false
+}
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
 

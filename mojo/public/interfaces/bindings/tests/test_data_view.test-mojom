@@ -18,8 +18,8 @@ struct NestedStruct {
   int32 f_int32;
 };
 
-[Native]
-struct TestNativeStruct;
+// [Native]
+// struct TestNativeStruct;
 
 union TestUnion {
   bool f_bool;

@@ -20,8 +20,8 @@ struct RectPair {
 struct EmptyStruct {
 };
 
-[Native]
-struct UnmappedNativeStruct;
+// [Native]
+// struct UnmappedNativeStruct;
 
 // Used to verify that struct fields which don't specify a default are
 // initialized to: false for bool, 0 for numbers, and null for strings,
