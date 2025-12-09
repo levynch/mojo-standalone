@@ -5,5 +5,5 @@
 
 group("all") {
   testonly = true
-  deps = [ "//mojo", "//mojo:mojo_unittests" ]
+  deps = [ "//mojo", "//mojo:mojo_unittests", "//codelabs" ]
 }

@@ -1,0 +1,18 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "interface.mojom" ]
+  # Disabled ipc dependencies because the current project no longer includes the ipc module
+  # public_deps = [
+  #   "//ipc:mojom",
+  #   "//ipc:mojom_constants",
+  # ]
+  # deps = [
+  #   "//ipc:mojom",
+  #   "//ipc:mojom_constants",
+  # ]
+
+  # Don't generate a variant sources since we depend on generated internal
+  # bindings types and we don't generate or build variants of those.
+  disable_variants = true
+}
