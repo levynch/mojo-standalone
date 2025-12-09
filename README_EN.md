@@ -2,6 +2,11 @@
 
 This is an experimental project aimed at extracting the Mojo module from Chromium to use it as a standalone cross-platform IPC communication library. The project includes Chromium's base library and Mojo-related components.
 
+## Version Information
+
+- **Chromium Tag**: 143.0.7490.0
+- **Chromium Revision**: ba1244a6ca103fa348994c5a6d078dbe4ed96e4b
+
 ## Installation Steps
 
 ### 1. Get depot_tools

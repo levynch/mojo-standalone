@@ -2,7 +2,10 @@
 
 这是一个实验性项目，旨在从 Chromium 中提取 Mojo 模块，使其能够作为独立的跨平台 IPC 通信库使用。项目包含了 Chromium 的基础库（base）和 Mojo 相关组件。
 
+## 版本信息
 
+- **Chromium Tag**: 143.0.7490.0
+- **Chromium Revision**: ba1244a6ca103fa348994c5a6d078dbe4ed96e4b
 
 
 ## 安装步骤
