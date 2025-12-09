@@ -11,7 +11,8 @@ Remove compilation of native struct serialization files and disable related test
  .../cpp/bindings/tests/struct_unittest.cc     | 65 ++-----------------
  .../bindings/tests/test_data_view.test-mojom  |  2 +-
  .../tests/test_native_types.test-mojom        | 47 ++++++--------
- 6 files changed, 43 insertions(+), 173 deletions(-)
+ .../bindings/tests/test_structs.test-mojom    |  4 +-
+ 7 files changed, 45 insertions(+), 175 deletions(-)
 
 diff --git a/mojo/public/cpp/bindings/BUILD.gn b/mojo/public/cpp/bindings/BUILD.gn
 index 711c71b881..a448bc6a7f 100644
@@ -362,6 +363,20 @@ index 9bd3282ec3..069806789c 100644
 +//   PassNativeStructWithAttachments(TestNativeStructWithAttachmentsMojom s)
 +//       => (TestNativeStructWithAttachmentsMojom s);
  };
--- 
-2.52.0.windows.1
++diff --git a/mojo/public/interfaces/bindings/tests/test_structs.test-mojom b/mojo/public/interfaces/bindings/tests/test_structs.test-mojom
++index 0000000000..1111111111 100644
++--- a/mojo/public/interfaces/bindings/tests/test_structs.test-mojom
+++++ b/mojo/public/interfaces/bindings/tests/test_structs.test-mojom
++@@ -18,8 +18,8 @@ struct EmptyStruct {
++ };
++ 
++-[Native]
++-struct UnmappedNativeStruct;
+++// [Native]
+++// struct UnmappedNativeStruct;
++ 
++ // Used to verify that struct fields which don't specify a default are
++ // initialized to: false for bool, 0 for numbers, and null for strings,
++-- 
++2.52.0.windows.1
 
