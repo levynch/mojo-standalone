@@ -6,4 +6,3 @@ solutions = [
     "managed"     : False,
   },
 ]
-target_os = ['win']

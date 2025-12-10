@@ -9,11 +9,20 @@ This is an experimental project aimed at extracting the Mojo module from Chromiu
 
 ## Installation Steps
 
-### 1. Get depot_tools
+### 1. Install System Dependencies (Linux)
 
-First, install [`depot_tools`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) and make sure it's in your PATH.
+On Ubuntu/Debian systems, install the following dependencies first:
 
-### 2. Sync Dependencies
+```bash
+sudo apt-get update
+sudo apt-get install -y pkg-config libfuse2
+```
+
+### 2. Get depot_tools
+
+Install [`depot_tools`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) and make sure it's in your PATH.
+
+### 3. Sync Dependencies
 
 Then from within the repository root:
 
@@ -23,7 +32,7 @@ gclient sync
 
 This will automatically download all required third-party dependencies and toolchains.
 
-### 3. Generate Build Files
+### 4. Generate Build Files
 
 Use GN (Generate Ninja) to generate build files:
 
@@ -35,7 +44,7 @@ gn gen out/Debug
 gn gen out/Release --args='is_debug=false'
 ```
 
-### 4. Build the Project
+### 5. Build the Project
 
 Use Ninja to compile:
 

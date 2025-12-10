@@ -10,11 +10,20 @@
 
 ## 安装步骤
 
-### 1. 获取 depot_tools
+### 1. 安装系统依赖 (Linux)
 
-首先需要安装 [`depot_tools`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) 并确保它在你的 PATH 环境变量中。
+在 Ubuntu/Debian 系统上，需要先安装以下依赖：
 
-### 2. 同步依赖
+```bash
+sudo apt-get update
+sudo apt-get install -y pkg-config libfuse2
+```
+
+### 2. 获取 depot_tools
+
+安装 [`depot_tools`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up) 并确保它在你的 PATH 环境变量中。
+
+### 3. 同步依赖
 
 然后在项目根目录执行：
 
@@ -24,7 +33,7 @@ gclient sync
 
 这将自动下载所有必需的第三方依赖和工具链。
 
-### 3. 生成构建文件
+### 4. 生成构建文件
 
 使用 GN (Generate Ninja) 生成构建文件：
 
@@ -36,7 +45,7 @@ gn gen out/Debug
 gn gen out/Release --args='is_debug=false'
 ```
 
-### 4. 编译项目
+### 5. 编译项目
 
 使用 Ninja 进行编译：
 
