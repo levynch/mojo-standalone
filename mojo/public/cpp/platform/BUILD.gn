@@ -52,7 +52,6 @@ component("platform") {
 
   if (is_posix && !is_mac) {
     sources += [ "named_platform_channel_posix.cc" ]
-    deps += [ "//net" ]
   }
 
   if (is_mac) {
