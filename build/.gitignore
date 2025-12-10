@@ -24,3 +24,5 @@ ciopfs
 /mac_files
 
 !/util/LASTCHANGE.dummy
+!/util/lastchange.gni
+!/util/lastchange.py
