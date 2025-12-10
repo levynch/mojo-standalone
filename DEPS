@@ -48,6 +48,7 @@ vars = {
   'chromium_googletest_revision': '91e8a4cf5607164178e0455bbea40845c9b0d93c',
   'chromium_re2_revision': '581c1f779dffb7d5ffd4296b79736c9ce961caae',
 #  'chromium_testing_revision': '6bf7e8e674b4552e12d140378e4394e7970e3fbc',
+  'lss_revision': '29164a80da4d41134950d76d55199ea33fbb9613',
   'clang_format_revision': 'c2725e0622e1a86d55f14514f2177a39efea4a0e',
   'clang_revision': 'f0aeeca2d4eea4ade7308a31bc4023fc52614332',
   'compiler_rt_revision': 'd4d5a24a5514088089ccbaebda6576da640f04e8',
@@ -137,6 +138,10 @@ deps = {
   'third_party/jsoncpp/source':
     Var('chromium_git') + '/external/github.com/open-source-parsers/jsoncpp.git'
       + '@' + '42e892d96e47b1f6e29844cc705e148ec4856448', # release 1.9.4
+  'third_party/lss': {
+      'url': Var('chromium_git') + '/linux-syscall-support.git' + '@' + Var('lss_revision'),
+      'condition': 'checkout_android or checkout_linux',
+  },
   'third_party/libc++/src':
       '{chromium_git}/external/github.com/llvm/llvm-project/libcxx.git@{libcxx_revision}',
 
